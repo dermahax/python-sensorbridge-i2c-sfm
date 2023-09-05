@@ -22,7 +22,7 @@ class Sfm3000I2cSensorBridgeDevice:
         MeasurementMode.AirO2Mix: Sfm3000I2cCmdStartMeasAirO2Mix,
     }
 
-    def __init__(self, sensor_bridge, sensor_bridge_port, slave_address=0x2E):
+    def __init__(self, sensor_bridge, sensor_bridge_port, slave_address=0x40):
         """
         Constructs a new SFM3000 I²C device.
 
