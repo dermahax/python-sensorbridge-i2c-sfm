@@ -3,28 +3,28 @@
 
 from __future__ import absolute_import, division, print_function
 
-from .commands import Sfm3019I2cCmdReadMeas, \
-    Sfm3019I2cCmdReadProductIdentifierAndSerialNumber, \
-    Sfm3019I2cCmdStartMeasAir, Sfm3019I2cCmdStartMeasAirO2Mix, \
-    Sfm3019I2cCmdStartMeasO2, Sfm3019I2cCmdStopMeas, \
-    Sfm3019I2cCmdGetUnitAndFactors
-from .sfm3019_constants import MeasurementMode, FLOW_UNIT_PREFIX, FLOW_UNIT, FLOW_TIME_BASE
+from .commands import Sfm3000I2cCmdReadMeas, \
+    Sfm3000I2cCmdReadProductIdentifierAndSerialNumber, \
+    Sfm3000I2cCmdStartMeasAir, Sfm3000I2cCmdStartMeasAirO2Mix, \
+    Sfm3000I2cCmdStartMeasO2, Sfm3000I2cCmdStopMeas, \
+    Sfm3000I2cCmdGetUnitAndFactors
+from .sfm3000_constants import MeasurementMode, FLOW_UNIT_PREFIX, FLOW_UNIT, FLOW_TIME_BASE
 
 
-class Sfm3019I2cSensorBridgeDevice:
+class Sfm3000I2cSensorBridgeDevice:
     """
-    SFM3019 I²C device class to allow executing I²C commands via Sensirion's SensorBridge.
+    SFM3000 I²C device class to allow executing I²C commands via Sensirion's SensorBridge.
     """
 
     MeasurementCmds = {
-        MeasurementMode.O2: Sfm3019I2cCmdStartMeasO2,
-        MeasurementMode.Air: Sfm3019I2cCmdStartMeasAir,
-        MeasurementMode.AirO2Mix: Sfm3019I2cCmdStartMeasAirO2Mix,
+        MeasurementMode.O2: Sfm3000I2cCmdStartMeasO2,
+        MeasurementMode.Air: Sfm3000I2cCmdStartMeasAir,
+        MeasurementMode.AirO2Mix: Sfm3000I2cCmdStartMeasAirO2Mix,
     }
 
     def __init__(self, sensor_bridge, sensor_bridge_port, slave_address=0x2E):
         """
-        Constructs a new SFM3019 I²C device.
+        Constructs a new SFM3000 I²C device.
 
         :param ~sensirion_shdlc_sensorbridge.device.SensorBridgeShdlcDevice sensor_bridge:
             The I²C SHDLC SensorBridge connection to use for communication.
@@ -80,7 +80,7 @@ class Sfm3019I2cSensorBridgeDevice:
         :rtype:
             triple
         """
-        return self._execute(Sfm3019I2cCmdGetUnitAndFactors(self.MeasurementCmds[measure_mode].COMMAND))
+        return self._execute(Sfm3000I2cCmdGetUnitAndFactors(self.MeasurementCmds[measure_mode].COMMAND))
 
     def _convert_measurement_data(self, params):
         """Apply offset and scaling to measurement data"""
@@ -118,7 +118,7 @@ class Sfm3019I2cSensorBridgeDevice:
         :rtype:
             tuple
         """
-        return self._execute(Sfm3019I2cCmdReadProductIdentifierAndSerialNumber())
+        return self._execute(Sfm3000I2cCmdReadProductIdentifierAndSerialNumber())
 
     def start_continuous_measurement(self, measure_mode=MeasurementMode.Air,
                                      air_o2_mix_fraction_permille=None):
@@ -139,7 +139,7 @@ class Sfm3019I2cSensorBridgeDevice:
         return self._execute(self.MeasurementCmds[measure_mode]())
 
     def stop_continuous_measurement(self):
-        return self._execute(Sfm3019I2cCmdStopMeas())
+        return self._execute(Sfm3000I2cCmdStopMeas())
 
     def read_continuous_measurement(self):
         """
@@ -155,4 +155,4 @@ class Sfm3019I2cSensorBridgeDevice:
         :rtype:
             tuple
         """
-        return self._convert_measurement_data(self._execute(Sfm3019I2cCmdReadMeas()))
+        return self._convert_measurement_data(self._execute(Sfm3000I2cCmdReadMeas()))
