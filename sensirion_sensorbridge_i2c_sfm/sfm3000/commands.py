@@ -54,7 +54,8 @@ class Sfm3000I2cCmdBase(SensirionWordI2cCommand):
             rx_length=rx_length,
             read_delay=read_delay,
             timeout=timeout,
-            crc=CrcCalculator(8, 0x31, 0xFF),
+            # crc=CrcCalculator(8, 0x31, 0xFF),
+            crc=CrcCalculator(8, 0x31, 0x00),
             command_bytes=2,
         )
 
@@ -69,9 +70,11 @@ class Sfm3000I2cCmdReadProductIdentifierAndSerialNumber(Sfm3000I2cCmdBase):
         Constructs a new command.
         """
         super(Sfm3000I2cCmdReadProductIdentifierAndSerialNumber,
-              self).__init__(command=0xE102,
+              self).__init__(#command=0xE102,
+                             command=0x31AE,
                              tx_words=[],
-                             rx_length=18,
+                             #rx_length=18,
+                             rx_length=6,
                              read_delay=0,
                              timeout=0,
                              )
@@ -86,11 +89,13 @@ class Sfm3000I2cCmdReadProductIdentifierAndSerialNumber(Sfm3000I2cCmdBase):
 
     def interpret_response(self, data):
         words = Sfm3000I2cCmdBase.interpret_response(self, data)
-        product_id = words[0] << 16 | words[1]
-        serial_number = words[2] << 48 | words[3] << 32 | words[4] << 16 | words[5]
+        #product_id = words[0] << 16 | words[1]
+        #serial_number = words[2] << 48 | words[3] << 32 | words[4] << 16 | words[5]
+        product_id = "" #sfm 3000 does not return product identifier
+        serial_number = words[0] << 16 | words[1] 
         return product_id, serial_number
 
-
+'''
 class Sfm3000I2cCmdStartMeasO2(Sfm3000I2cCmdBase):
     """
     SFM3000 I²C command "Start continuous Measurement of O2"
@@ -110,13 +115,14 @@ class Sfm3000I2cCmdStartMeasO2(Sfm3000I2cCmdBase):
             timeout=0,
         )
 
-
+'''
 class Sfm3000I2cCmdStartMeasAir(Sfm3000I2cCmdBase):
     """
     SFM3000 I²C command "Start continuous Measurement of Air"
     """
 
-    COMMAND = 0x3608
+    #COMMAND = 0x3608
+    COMMAND = 0x1000
 
     def __init__(self):
         """
@@ -130,7 +136,7 @@ class Sfm3000I2cCmdStartMeasAir(Sfm3000I2cCmdBase):
             timeout=0,
         )
 
-
+'''
 class Sfm3000I2cCmdStartMeasAirO2Mix(Sfm3000I2cCmdBase):
     """
     SFM3000 I²C command "Start continuous Measurement of Air/O2 with Volume
@@ -153,7 +159,7 @@ class Sfm3000I2cCmdStartMeasAirO2Mix(Sfm3000I2cCmdBase):
             read_delay=0.012,
             timeout=0,
         )
-
+'''
 
 class Sfm3000I2cCmdReadMeas(Sfm3000I2cCmdBase):
     """
@@ -167,7 +173,7 @@ class Sfm3000I2cCmdReadMeas(Sfm3000I2cCmdBase):
         super(Sfm3000I2cCmdReadMeas, self).__init__(
             command=None,
             tx_words=None,
-            rx_length=6,
+            rx_length=4, # used to be 6 for 3019
             read_delay=0,
             timeout=0,
         )
@@ -182,7 +188,8 @@ class Sfm3000I2cCmdReadMeas(Sfm3000I2cCmdBase):
 
     def interpret_response(self, data):
         words = Sfm3000I2cCmdBase.interpret_response(self, data)
-        return int16(words[0]), int16(words[1])
+        #return int16(words[0]), int16(words[1])
+        return int16(words[0])
 
 
 class Sfm3000I2cCmdStopMeas(Sfm3000I2cCmdBase):
@@ -199,6 +206,7 @@ class Sfm3000I2cCmdStopMeas(Sfm3000I2cCmdBase):
             tx_words=[],
             rx_length=None,
             read_delay=0.0005,
+            #read_delay=0.01, # 100 ms
             timeout=0,
         )
 

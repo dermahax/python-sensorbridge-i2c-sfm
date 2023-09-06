@@ -5,8 +5,7 @@ from __future__ import absolute_import, division, print_function
 
 from .commands import Sfm3000I2cCmdReadMeas, \
     Sfm3000I2cCmdReadProductIdentifierAndSerialNumber, \
-    Sfm3000I2cCmdStartMeasAir, Sfm3000I2cCmdStartMeasAirO2Mix, \
-    Sfm3000I2cCmdStartMeasO2, Sfm3000I2cCmdStopMeas, \
+    Sfm3000I2cCmdStartMeasAir, \
     Sfm3000I2cCmdGetUnitAndFactors
 from .sfm3000_constants import MeasurementMode, FLOW_UNIT_PREFIX, FLOW_UNIT, FLOW_TIME_BASE
 
@@ -17,12 +16,12 @@ class Sfm3000I2cSensorBridgeDevice:
     """
 
     MeasurementCmds = {
-        MeasurementMode.O2: Sfm3000I2cCmdStartMeasO2,
+        #MeasurementMode.O2: Sfm3000I2cCmdStartMeasO2,
         MeasurementMode.Air: Sfm3000I2cCmdStartMeasAir,
-        MeasurementMode.AirO2Mix: Sfm3000I2cCmdStartMeasAirO2Mix,
+        #MeasurementMode.AirO2Mix: Sfm3000I2cCmdStartMeasAirO2Mix,
     }
 
-    def __init__(self, sensor_bridge, sensor_bridge_port, slave_address=0x40):
+    def __init__(self, sensor_bridge, sensor_bridge_port, slave_address=0x40): # i2c doc says 0x81
         """
         Constructs a new SFM3000 I²C device.
 
@@ -84,7 +83,8 @@ class Sfm3000I2cSensorBridgeDevice:
 
     def _convert_measurement_data(self, params):
         """Apply offset and scaling to measurement data"""
-        return (float(params[0]) - self._flow_offset) / self._flow_scale_factor, float(params[1] / 200.)
+        #return (float(params[0]) - self._flow_offset) / self._flow_scale_factor, float(params[1] / 200.)
+        return (float(params) - self._flow_offset) / self._flow_scale_factor, 0
 
     @property
     def flow_unit(self):
@@ -105,9 +105,11 @@ class Sfm3000I2cSensorBridgeDevice:
 
         Needs to be done before any measurement call is executed.
         """
-        self.stop_continuous_measurement()
-        self._flow_scale_factor, self._flow_offset, self._flow_unit = self._get_factors_and_unit(measure_mode)
+        #self.stop_continuous_measurement()
+        #self._flow_scale_factor, self._flow_offset, self._flow_unit = self._get_factors_and_unit(measure_mode)
+        self._flow_scale_factor, self._flow_offset, self._flow_unit = 140, 32000, 0
 
+        
     def read_product_identifier_and_serial_number(self):
         """
         Read the product identifier and serial number.
